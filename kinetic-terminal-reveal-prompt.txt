@@ -1,0 +1,36 @@
+Create a website preloader and page reveal animation called "Kinetic Terminal Page Reveal" following the strict guidelines of a Front-End Developer & Animation Specialist.
+
+### Core Requirements
+1. **Tech Stack**: HTML, Vanilla CSS, Vanilla JS, and FREE GSAP only (including CustomEase). Do NOT use any premium plugins (no SplitText, ScrollSmoother, etc.).
+2. **Color Palette**: Strictly use the Extended Pastel Color Palette for the revealed website content, while using Neutrals for the preloader.
+3. **Beginner-Friendly Code**: Heavily comment the logic. Explain how to integrate this preloader into an existing website structure. Explain the GSAP timelines, SVG math, and CSS clip-path logic.
+4. **Responsiveness**: Ensure the preloader overlay scales fluidly across all devices.
+
+### Animation Phases & Design
+The implementation should act as a global overlay (`z-index: 9999`) that blocks interactions until the page is fully "loaded", then dynamically reveals the main website beneath it.
+
+#### 1. Global Terminal Preloader Overlay (Achromatic / Neutral Colors)
+- **Structure**: A fixed, full-screen `div` overlaying the entire website body.
+- **Background**: Very dark (`#0A0A0A`) with Pale Silver / Warm Gray accents.
+- **Elements**:
+  - A circular SVG progress bar. The circle's stroke animates from empty to full using `stroke-dasharray` and `stroke-dashoffset`.
+  - A digital percentage counter (00 to 100) placed in the center of the SVG circle.
+  - A retro terminal text block (using a monospace font like 'JetBrains Mono').
+- **Animation**: 
+  - Animate fake terminal boot sequence text lines fading in and sliding up sequentially (e.g., "> BOOTING CORE SYSTEM...", "> INITIALIZING DOM...").
+  - Animate the progress percentage and the SVG circle filling up over ~3 seconds (to simulate load time) using GSAP.
+
+#### 2. The Page Reveal Transition (The Shutter Wipe)
+- Once the preloader hits 100%, trigger the page reveal timeline.
+- Create a GSAP CustomEase curve called "shutter" (e.g., `M0,0 C0.64,0 0.35,1 1,1`).
+- Animate the full-screen preloader overlay collapsing into a tiny center point. Use CSS `clip-path: polygon(50% 50%, 50% 50%, 50% 50%, 50% 50%)` for a cinematic shrinking box wipe effect.
+- **Crucial**: After the wipe completes, set the preloader overlay to `display: none` or `pointer-events: none` so the user can interact with the website underneath.
+
+#### 3. Main Website Content Entrance (Muted / Earthy Colors)
+- **Structure**: Provide a sample website Homepage layout underneath the preloader overlay to demonstrate the effect. 
+- **Animation**: 
+  - As the preloader collapses, the entire main website container should dynamically scale up (e.g., from `scale: 0.9` to `scale: 1`) and fade in.
+  - Provide a dummy Hero Section for the revealed website. Use soft earthy tones (e.g., Vanilla Haze `#F5F2E8`).
+  - Animate the Hero title (e.g., "Welcome to the Experience") sliding up character-by-character or word-by-word into view (the "Pop"). Use manual `<span>` tags hidden behind an `overflow: hidden` parent.
+
+Ensure the final code is self-contained. The goal is to provide a plug-and-play preloader snippet that a beginner can easily drop onto any existing website body to achieve a premium entrance effect.
