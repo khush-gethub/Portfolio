@@ -19,9 +19,15 @@ const App = () => {
   // Animate the main content in when loading completes
   useGSAP(() => {
     if (loadingComplete && mainContentRef.current) {
-      gsap.fromTo(mainContentRef.current, 
+      gsap.fromTo(mainContentRef.current,
         { opacity: 0, scale: 0.9 },
-        { opacity: 1, scale: 1, duration: 1.5, ease: "power3.out" }
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 1.5,
+          ease: "power3.out",
+          clearProps: "all" // Critical: removes the transform property after animation so 'fixed' children (like DraggableNav) position relative to the viewport again
+        }
       );
     }
   }, [loadingComplete]);
@@ -29,14 +35,13 @@ const App = () => {
   return (
     <div className="bg-slate-900 min-h-screen selection:bg-cyan-500/30 selection:text-cyan-200 overflow-x-hidden">
       <Preloader onComplete={() => setLoadingComplete(true)} />
-      
+
       {/* Hide scrollbar or overflow issues during preloading by constraining if needed, 
           but usually wrapping everything in a ref is enough */}
-      <div 
-        ref={mainContentRef} 
-        // We set the initial state via style so it matches the start of the GSAP animation
-        style={{ opacity: 0, scale: 0.9 }} 
-        className={loadingComplete ? "" : "h-screen overflow-hidden pointer-events-none"}
+      <div
+        ref={mainContentRef}
+        // Use class for initial hidden state to avoid hardcoded styles conflicting with GSAP clearProps
+        className={loadingComplete ? "" : "opacity-0 h-screen overflow-hidden pointer-events-none"}
       >
         <Navbar />
         <DraggableNav />

@@ -19,6 +19,13 @@ const Projects = () => {
       techStack: ['React', 'JavaScript', 'Tailwind CSS', 'Mongodb', 'Stripe Payment Gateway', 'JWT Authentication',],
       githubLink: 'https://github.com/khush-gethub/PCPARTS',
       liveLink: '#',
+    },
+    {
+      title: 'Skilliva',
+      description: 'A clean, modern skill-learning platform designed to showcase structured courses, intuitive navigation, and a smooth user experience',
+      techStack: ['HTML5', 'CSS3', 'JavaScript (ES6)', 'Bootstrap', 'Git & GitHub Pages'],
+      githubLink: 'https://github.com/daxmore/Skilliva',
+      liveLink: 'https://daxmore.github.io/Skilliva/',
     }
   ];
 

@@ -9,7 +9,18 @@
   html {
     scroll-behavior: smooth;
   }
+
   body {
     @apply bg-slate-900 text-slate-200 antialiased font-sans;
+  }
+}
+
+@layer utilities {
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
   }
 }
