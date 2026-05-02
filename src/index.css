@@ -3,6 +3,7 @@
 
 @theme {
   --font-sans: "Inter", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
 }
 
 @layer base {
@@ -22,5 +23,286 @@
 
   .backface-hidden {
     backface-visibility: hidden;
+  }
+}
+
+/* ====================================================
+   3D Card Stack — Skills Section Animation Styles
+   ==================================================== */
+
+/* Background glow that shifts color during dismissal */
+.skills-bg-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 800px;
+  height: 800px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.5;
+  transition: background 0.6s ease;
+}
+
+/* Hero header that fades out on scroll */
+.skills-hero-header {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.skills-hero-header h2 {
+  font-family: "Outfit", sans-serif;
+  font-weight: 900;
+  font-size: clamp(3rem, 8vw, 7rem);
+  text-transform: uppercase;
+  color: white;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.skills-hero-header h2 span {
+  color: #22d3ee;
+  /* cyan-400 */
+}
+
+.skills-hero-header p {
+  font-family: "Inter", sans-serif;
+  color: #94a3b8;
+  /* slate-400 */
+  font-size: clamp(0.9rem, 2vw, 1.25rem);
+  margin-top: 1rem;
+  font-weight: 500;
+}
+
+/* Card Stack Container — preserves 3D context */
+.skills-card-stack {
+  position: relative;
+  transform-style: preserve-3d;
+  width: clamp(300px, 42vw, 480px);
+  aspect-ratio: 3.2 / 4.2;
+  z-index: 10;
+}
+
+/* Individual card styling */
+.skills-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 28px;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(24px, 3vw, 40px);
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.4),
+    0 10px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+/* Card number at top-left */
+.skills-card .card-number {
+  font-family: "Outfit", sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  opacity: 0.4;
+}
+
+/* Card heading */
+.skills-card .card-heading {
+  font-family: "Outfit", sans-serif;
+  font-weight: 900;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  text-transform: uppercase;
+  line-height: 1.05;
+  margin: 0;
+}
+
+/* Card description text */
+.skills-card .card-desc {
+  font-family: "Inter", sans-serif;
+  font-size: clamp(1.3rem, 1.2vw, 0.85rem);
+  line-height: 1.5;
+  opacity: 0.75;
+  margin-top: auto;
+}
+
+/* Card skill tags */
+.skills-card .card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  font-size: 1.3rem;
+}
+
+.skills-card .card-tags span {
+  font-family: "Inter", sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ---- Card Color Themes ---- */
+
+/* Cover Card — Dusty Rose */
+.skills-card--cover {
+  background: linear-gradient(135deg, #E8C4BC 0%, #d4a99f 100%);
+  color: #3d2828;
+}
+
+.skills-card--cover .card-number {
+  color: #3d2828;
+}
+
+/* Card 1 — Muted Sage */
+.skills-card--1 {
+  background: linear-gradient(135deg, #C8D8CC 0%, #a8c4ae 100%);
+  color: #2a3b2e;
+}
+
+.skills-card--1 .card-number {
+  color: #2a3b2e;
+}
+
+/* Card 2 — Pale Lavender */
+.skills-card--2 {
+  background: linear-gradient(135deg, #D4C9E3 0%, #b9aad4 100%);
+  color: #2e2841;
+}
+
+.skills-card--2 .card-number {
+  color: #2e2841;
+}
+
+/* Card 3 — Soft Peach */
+.skills-card--3 {
+  background: linear-gradient(135deg, #F0D9D1 0%, #e0bfb4 100%);
+  color: #3d2d26;
+}
+
+.skills-card--3 .card-number {
+  color: #3d2d26;
+}
+
+/* Card 4 — Muted Blue */
+.skills-card--4 {
+  background: linear-gradient(135deg, #B8D4E8 0%, #96bdd9 100%);
+  color: #1e3448;
+}
+
+.skills-card--4 .card-number {
+  color: #1e3448;
+}
+
+/* Scroll indicator at the bottom of pinned section */
+.skills-scroll-indicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.4;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.skills-scroll-indicator span {
+  font-family: "Inter", sans-serif;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: #94a3b8;
+}
+
+.skills-scroll-indicator .scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, #94a3b8, transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scaleY(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleY(1.3);
+  }
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .skills-card-stack {
+    width: clamp(240px, 75vw, 340px);
+  }
+
+  .skills-card {
+    border-radius: 20px;
+    padding: 20px;
+  }
+
+  .skills-bg-glow {
+    width: 400px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .skills-card-stack {
+    width: clamp(220px, 82vw, 300px);
+  }
+
+  .skills-card .card-heading {
+    font-size: 1.5rem;
+  }
+
+  .skills-card .card-tags span {
+    font-size: 0.5rem;
+    padding: 3px 7px;
+  }
+
+  .projects-card-wrapper {
+    width: clamp(220px, 82vw, 300px);
+  }
+}
+
+/* ====================================================
+   Projects Card Sizing — Matching Skills
+   ==================================================== */
+.projects-card-wrapper {
+  width: clamp(280px, 31vw, 450px);
+  aspect-ratio: 3.2 / 4.2;
+  perspective: 2000px;
+}
+
+@media (max-width: 768px) {
+  .projects-card-wrapper {
+    width: clamp(240px, 75vw, 340px);
   }
 }

@@ -81,7 +81,7 @@ const Preloader = ({ onComplete }) => {
       className="fixed top-0 left-0 w-full h-full bg-[#0A0A0A] text-[#C0C0C0] z-[9999] flex flex-col items-center justify-center pointer-events-auto"
       style={{ clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
     >
-      <div className="relative w-[200px] h-[200px] flex items-center justify-center mb-10">
+      <div className="relative w-[200px] h-[200px] flex items-center justify-center mb-10 ">
         <svg className="absolute -rotate-90" width="200" height="200">
           <circle cx="100" cy="100" r="90" fill="none" stroke="#222" strokeWidth="4"></circle>
           <circle
