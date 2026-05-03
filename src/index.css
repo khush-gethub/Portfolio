@@ -87,7 +87,8 @@
 .skills-card-stack {
   position: relative;
   transform-style: preserve-3d;
-  width: clamp(300px, 42vw, 480px);
+  /* Responsive size: fits on all desktop screens without overflow */
+  width: clamp(260px, 32vw, 440px);
   aspect-ratio: 3.2 / 4.2;
   z-index: 10;
 }
@@ -104,7 +105,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: clamp(24px, 3vw, 40px);
+  padding: clamp(20px, 2.5vw, 36px);
   box-shadow:
     0 25px 50px rgba(0, 0, 0, 0.4),
     0 10px 20px rgba(0, 0, 0, 0.2);
@@ -116,7 +117,7 @@
 .skills-card .card-number {
   font-family: "Outfit", sans-serif;
   font-weight: 900;
-  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  font-size: clamp(1rem, 1.5vw, 1.4rem);
   opacity: 0.4;
 }
 
@@ -124,16 +125,16 @@
 .skills-card .card-heading {
   font-family: "Outfit", sans-serif;
   font-weight: 900;
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-size: clamp(1.5rem, 3vw, 2.6rem);
   text-transform: uppercase;
   line-height: 1.05;
   margin: 0;
 }
 
-/* Card description text */
+/* Card description text — FIXED: was incorrectly using large clamp min */
 .skills-card .card-desc {
   font-family: "Inter", sans-serif;
-  font-size: clamp(1.3rem, 1.2vw, 0.85rem);
+  font-size: clamp(0.72rem, 1vw, 0.88rem);
   line-height: 1.5;
   opacity: 0.75;
   margin-top: auto;
@@ -143,9 +144,8 @@
 .skills-card .card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-  font-size: 1.3rem;
+  gap: 5px;
+  margin-top: 10px;
 }
 
 .skills-card .card-tags span {
@@ -154,8 +154,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 4px 10px;
-  border-radius: 8px;
+  padding: 3px 8px;
+  border-radius: 7px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
@@ -167,50 +167,35 @@
   background: linear-gradient(135deg, #E8C4BC 0%, #d4a99f 100%);
   color: #3d2828;
 }
-
-.skills-card--cover .card-number {
-  color: #3d2828;
-}
+.skills-card--cover .card-number { color: #3d2828; }
 
 /* Card 1 — Muted Sage */
 .skills-card--1 {
   background: linear-gradient(135deg, #C8D8CC 0%, #a8c4ae 100%);
   color: #2a3b2e;
 }
-
-.skills-card--1 .card-number {
-  color: #2a3b2e;
-}
+.skills-card--1 .card-number { color: #2a3b2e; }
 
 /* Card 2 — Pale Lavender */
 .skills-card--2 {
   background: linear-gradient(135deg, #D4C9E3 0%, #b9aad4 100%);
   color: #2e2841;
 }
-
-.skills-card--2 .card-number {
-  color: #2e2841;
-}
+.skills-card--2 .card-number { color: #2e2841; }
 
 /* Card 3 — Soft Peach */
 .skills-card--3 {
   background: linear-gradient(135deg, #F0D9D1 0%, #e0bfb4 100%);
   color: #3d2d26;
 }
-
-.skills-card--3 .card-number {
-  color: #3d2d26;
-}
+.skills-card--3 .card-number { color: #3d2d26; }
 
 /* Card 4 — Muted Blue */
 .skills-card--4 {
   background: linear-gradient(135deg, #B8D4E8 0%, #96bdd9 100%);
   color: #1e3448;
 }
-
-.skills-card--4 .card-number {
-  color: #1e3448;
-}
+.skills-card--4 .card-number { color: #1e3448; }
 
 /* Scroll indicator at the bottom of pinned section */
 .skills-scroll-indicator {
@@ -243,66 +228,48 @@
 }
 
 @keyframes scrollPulse {
-
-  0%,
-  100% {
-    opacity: 0.3;
-    transform: scaleY(1);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scaleY(1.3);
-  }
-}
-
-/* ---- Responsive ---- */
-@media (max-width: 768px) {
-  .skills-card-stack {
-    width: clamp(240px, 75vw, 340px);
-  }
-
-  .skills-card {
-    border-radius: 20px;
-    padding: 20px;
-  }
-
-  .skills-bg-glow {
-    width: 400px;
-    height: 400px;
-  }
-}
-
-@media (max-width: 480px) {
-  .skills-card-stack {
-    width: clamp(220px, 82vw, 300px);
-  }
-
-  .skills-card .card-heading {
-    font-size: 1.5rem;
-  }
-
-  .skills-card .card-tags span {
-    font-size: 0.5rem;
-    padding: 3px 7px;
-  }
-
-  .projects-card-wrapper {
-    width: clamp(220px, 82vw, 300px);
-  }
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.3); }
 }
 
 /* ====================================================
-   Projects Card Sizing — Matching Skills
+   Projects Card Sizing — Desktop only
    ==================================================== */
 .projects-card-wrapper {
-  width: clamp(280px, 31vw, 450px);
+  /* Slightly narrower so 3 cards fit comfortably */
+  width: clamp(220px, 28vw, 400px);
   aspect-ratio: 3.2 / 4.2;
   perspective: 2000px;
 }
 
-@media (max-width: 768px) {
-  .projects-card-wrapper {
-    width: clamp(240px, 75vw, 340px);
+/* ====================================================
+   Desktop Responsive — Tablet (769px – 1100px)
+   ==================================================== */
+@media (min-width: 769px) and (max-width: 1100px) {
+  .skills-card-stack {
+    width: clamp(240px, 38vw, 380px);
   }
+
+  .projects-card-wrapper {
+    width: clamp(200px, 30vw, 340px);
+  }
+
+  .skills-card .card-heading {
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+  }
+
+  .skills-card .card-desc {
+    font-size: clamp(0.65rem, 0.9vw, 0.8rem);
+  }
+}
+
+/* ====================================================
+   Mobile breakpoints are handled in JSX (isMobile state)
+   The CSS below is only a safety net for edge cases.
+   ==================================================== */
+
+/* Hide desktop skills card stack on very small screens */
+@media (max-width: 480px) {
+  .skills-card .card-heading { font-size: 1.4rem; }
+  .skills-card .card-tags span { font-size: 0.5rem; padding: 2px 6px; }
 }

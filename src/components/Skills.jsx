@@ -1,7 +1,8 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Terminal, Database, Cpu, Palette } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 // Register ScrollTrigger with GSAP
 gsap.registerPlugin(ScrollTrigger);
@@ -9,16 +10,14 @@ gsap.registerPlugin(ScrollTrigger);
 // ===================================================================
 // Skills Section — Scroll-Driven 3D Card Stack Flip Animation
 // ===================================================================
-// Uses GSAP + ScrollTrigger (pin: true) to create a cinematic
-// 4-phase experience WITHOUT fixed-position overlap issues:
-//   Phase 1: Hero header fades out, card stack enters from bottom
-//   Phase 2: Cover card flips away, revealing 4 skill cards behind
-//   Phase 3: Skill cards fly off screen one by one (alternating L/R)
-//   Phase 4: Card stack fades out completely
+// Desktop (>= 768px): GSAP + ScrollTrigger cinematic 4-phase animation
+// Mobile (< 768px):   Simple scrollable grid of skill cards
 // ===================================================================
 
 const Skills = () => {
-  // Refs for GSAP targeting
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+
+  // Refs for GSAP targeting (desktop only)
   const sectionRef = useRef(null);
   const heroRef = useRef(null);
   const cardStackRef = useRef(null);
@@ -63,8 +62,17 @@ const Skills = () => {
     }
   ];
 
+  // Track resize
   useEffect(() => {
-    // Guard: ensure all refs are attached
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // ---- DESKTOP: GSAP scroll animation ----
+  useEffect(() => {
+    if (isMobile) return;
+
     const section = sectionRef.current;
     const hero = heroRef.current;
     const cardStack = cardStackRef.current;
@@ -75,220 +83,218 @@ const Skills = () => {
 
     if (!section || !hero || !cardStack || !coverCard || backCards.length < 4) return;
 
-    // ===========================================
-    // 3D INITIAL STATE SETUP
-    // ===========================================
-
-    // The cover card faces forward — no rotation needed.
-    // It sits at the front of the stack in Z-space.
-    gsap.set(coverCard, {
-      rotationY: 0,
-      z: 100   // Slightly forward to prevent z-fighting
-    });
-
-    // The 4 back cards start FACING BACKWARD (rotateY: 180deg).
-    // They are positioned behind the cover card in Z-space.
-    // When they flip forward (rotateY → 0), they will become visible.
+    gsap.set(coverCard, { rotationY: 0, z: 100 });
     backCards.forEach((card, i) => {
-      gsap.set(card, {
-        rotationY: 180,
-        z: -(i + 1) * 5   // Stack them progressively further back
-      });
+      gsap.set(card, { rotationY: 180, z: -(i + 1) * 5 });
     });
-
-    // The entire card stack starts off-screen at the bottom
-    // with a slight 3D tilt for a dramatic entrance effect.
-    gsap.set(cardStack, {
-      y: '120vh',
-      rotationX: 15
-    });
-
-    // Hero header starts visible (will fade during Phase 1)
+    gsap.set(cardStack, { y: '120vh', rotationX: 15 });
     gsap.set(hero, { opacity: 1, y: 0 });
-
-    // Scroll indicator visible at start
     gsap.set(indicator, { opacity: 0.4 });
-
-    // ===========================================
-    // MASTER TIMELINE — Attached to ScrollTrigger
-    // ===========================================
-    // pin: true pins the section during animation,
-    // preventing any overlap with other components.
-    // end: "+=300%" gives 3× viewport scroll distance.
-    // scrub: 2.2 gives a smooth, slightly delayed response.
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
         start: 'top top',
-        end: '+=300%',     // 3× viewport for breathing room
+        end: '+=300%',
         scrub: 2.2,
-        pin: true,         // Pin the section — no overlap!
+        pin: true,
         anticipatePin: 1
       }
     });
 
-    // ===========================================
-    // PHASE 1: ENTRANCE
-    // ===========================================
-    // The hero header moves up and fades out while the card
-    // stack simultaneously rises from below into view.
+    tl.to(indicator, { opacity: 0, duration: 0.3 }, 0);
+    tl.to(hero, { opacity: 0, y: -100, duration: 0.8, ease: 'power2.inOut' }, 0);
+    tl.to(cardStack, { y: 0, rotationX: 0, duration: 1, ease: 'power2.out' }, 0.1);
 
-    // Fade out the scroll indicator immediately
-    tl.to(indicator, {
-      opacity: 0,
-      duration: 0.3
-    }, 0);
-
-    // Hero header animates UP and fades out
-    tl.to(hero, {
-      opacity: 0,
-      y: -100,
-      duration: 0.8,
-      ease: 'power2.inOut'
-    }, 0);
-
-    // Card stack rises from off-screen into center view
-    // Simultaneously removing the initial rotateX tilt
-    tl.to(cardStack, {
-      y: 0,
-      rotationX: 0,
-      duration: 1,
-      ease: 'power2.out'
-    }, 0.1);
-
-    // ===========================================
-    // PHASE 2: THE FLIP
-    // ===========================================
-    // The cover card flips away (rotationY → -180), revealing
-    // the 4 back cards that flip forward (rotationY → 0).
-    // Z-depth is recalculated so Card 1 ends up on top.
-
-    // Cover card flips away — pushed far back in Z-space
-    tl.to(coverCard, {
-      rotationY: -180,      // Flip it fully backward
-      z: -500,              // Push it far behind everything
-      x: -120,              // Slide it left for visual flair
-      duration: 0.8,
-      ease: 'back.inOut(1.2)'
-    }, 1.2);
-
-    // Back cards flip forward — they rotate from 180 → 0
-    // Each card gets a slight stagger for a cascading reveal.
-    // Z-translation is recalculated: Card 1 ends up closest
-    // to the viewer (highest Z), Card 4 furthest back.
+    tl.to(coverCard, { rotationY: -180, z: -500, x: -120, duration: 0.8, ease: 'back.inOut(1.2)' }, 1.2);
     backCards.forEach((card, i) => {
-      tl.to(card, {
-        rotationY: 0,
-        // Card 0 (first back card) gets the highest Z (closest to viewer)
-        // Card 3 (last back card) gets the lowest Z (furthest away)
-        z: (backCards.length - i) * 20,
-        duration: 0.8,
-        ease: 'back.inOut(1.2)'
-      }, 1.2 + (i * 0.08)); // Slight stagger per card
+      tl.to(card, { rotationY: 0, z: (backCards.length - i) * 20, duration: 0.8, ease: 'back.inOut(1.2)' }, 1.2 + (i * 0.08));
     });
 
-    // ===========================================
-    // PHASE 3: THE DISMISSAL
-    // ===========================================
-    // Cards fly off screen one by one. Even-indexed cards go
-    // LEFT, odd-indexed cards go RIGHT. Each card scales down
-    // slightly and tilts as it leaves.
-    // The background glow changes color to match each departing card.
-
-    const dismissalStart = 2.5;   // Starting point in the timeline
-    const cardDuration = 0.5;     // Duration each card takes to fly off
-    const cardDelay = 0.4;        // Delay between each card's departure
+    const dismissalStart = 2.5;
+    const cardDuration = 0.5;
+    const cardDelay = 0.4;
 
     backCards.forEach((card, i) => {
       const startAt = dismissalStart + (i * cardDelay);
       const isEven = i % 2 === 0;
-
-      // Fly the card off screen with alternating trajectory
       tl.to(card, {
-        y: '-150vh',                         // Fly upward
-        x: isEven ? '-20vw' : '20vw',       // Alternate left/right
-        rotationX: 20,                       // Tilt forward as it leaves
-        rotationZ: isEven ? -15 : 15,        // Spin slightly
-        scale: 0.85,                         // Shrink subtly
-        duration: cardDuration,
-        ease: 'power3.in'
+        y: '-150vh', x: isEven ? '-20vw' : '20vw',
+        rotationX: 20, rotationZ: isEven ? -15 : 15,
+        scale: 0.85, duration: cardDuration, ease: 'power3.in'
       }, startAt);
-
-      // Synchronize background glow color to match the leaving card
       tl.to(glow, {
         background: `radial-gradient(circle, ${skillCategories[i].glowColor} 0%, transparent 70%)`,
-        duration: cardDuration * 0.5,
-        ease: 'none'
+        duration: cardDuration * 0.5, ease: 'none'
       }, startAt);
     });
 
-    // ===========================================
-    // PHASE 4: EXIT
-    // ===========================================
-    // Fade out the entire card stack at the very end.
+    tl.to(cardStack, { opacity: 0, duration: 0.3, ease: 'power2.inOut' }, dismissalStart + (4 * cardDelay));
+    tl.to(glow, { opacity: 0, duration: 0.3 }, dismissalStart + (4 * cardDelay));
 
-    tl.to(cardStack, {
-      opacity: 0,
-      duration: 0.3,
-      ease: 'power2.inOut'
-    }, dismissalStart + (4 * cardDelay));
-
-    // Also fade out the glow
-    tl.to(glow, {
-      opacity: 0,
-      duration: 0.3
-    }, dismissalStart + (4 * cardDelay));
-
-    // Cleanup on unmount
     return () => {
       ScrollTrigger.getAll().forEach(st => st.kill());
       tl.kill();
     };
-  }, []);
+  }, [isMobile]);
 
+  // Mobile card theme map
+  const mobileThemes = [
+    { bg: 'linear-gradient(135deg, #C8D8CC 0%, #a8c4ae 100%)', color: '#2a3b2e' },
+    { bg: 'linear-gradient(135deg, #D4C9E3 0%, #b9aad4 100%)', color: '#2e2841' },
+    { bg: 'linear-gradient(135deg, #F0D9D1 0%, #e0bfb4 100%)', color: '#3d2d26' },
+    { bg: 'linear-gradient(135deg, #B8D4E8 0%, #96bdd9 100%)', color: '#1e3448' },
+  ];
+
+  // ============================================================
+  // MOBILE VIEW — Simple card grid
+  // ============================================================
+  if (isMobile) {
+    return (
+      <section
+        id="skills"
+        style={{
+          background: '#0f172a',
+          padding: '4rem 1rem',
+          minHeight: '100vh',
+        }}
+      >
+        {/* Section Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-60px' }}
+          transition={{ duration: 0.7 }}
+          style={{ textAlign: 'center', marginBottom: '2.5rem' }}
+        >
+          <h2 style={{
+            fontFamily: '"Outfit", sans-serif',
+            fontWeight: 900,
+            fontSize: 'clamp(2.2rem, 10vw, 3.5rem)',
+            textTransform: 'uppercase',
+            color: 'white',
+            lineHeight: 1,
+            letterSpacing: '-0.04em',
+            margin: 0,
+          }}>
+            Technical <span style={{ color: '#22d3ee' }}>Skills</span>
+          </h2>
+          <p style={{
+            fontFamily: '"Inter", sans-serif',
+            color: '#94a3b8',
+            fontSize: '0.95rem',
+            marginTop: '0.75rem',
+          }}>
+            A comprehensive look at my technological expertise.
+          </p>
+        </motion.div>
+
+        {/* Cover Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.55, ease: 'easeOut' }}
+          style={{
+            maxWidth: '480px',
+            margin: '0 auto 1.25rem',
+            borderRadius: '1.5rem',
+            background: 'linear-gradient(135deg, #E8C4BC 0%, #d4a99f 100%)',
+            color: '#3d2828',
+            padding: '1.5rem',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+            border: '1px solid rgba(255,255,255,0.1)',
+          }}
+        >
+          <span style={{ fontFamily: '"Outfit", sans-serif', fontWeight: 900, fontSize: '1.1rem', opacity: 0.4 }}>00</span>
+          <h3 style={{ fontFamily: '"Outfit", sans-serif', fontWeight: 900, fontSize: 'clamp(1.6rem, 7vw, 2rem)', textTransform: 'uppercase', lineHeight: 1.05, margin: '0.5rem 0' }}>
+            Technical<br/>Expertise
+          </h3>
+          <p style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.85rem', lineHeight: 1.5, opacity: 0.75, margin: 0 }}>
+            An overview of the core technologies I use to build scalable web applications — modern frameworks, efficient state management, and seamless integrations.
+          </p>
+        </motion.div>
+
+        {/* Skill Category Cards */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: '480px', margin: '0 auto' }}>
+          {skillCategories.map((category, index) => {
+            const theme = mobileThemes[index];
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-40px' }}
+                transition={{ duration: 0.55, delay: index * 0.1, ease: 'easeOut' }}
+                style={{
+                  borderRadius: '1.5rem',
+                  background: theme.bg,
+                  color: theme.color,
+                  padding: '1.5rem',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.3)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
+                  <span style={{ fontFamily: '"Outfit", sans-serif', fontWeight: 900, fontSize: '1.1rem', opacity: 0.4 }}>0{index + 1}</span>
+                  <div style={{ opacity: 0.5 }}>{category.icon}</div>
+                </div>
+                <h3 style={{
+                  fontFamily: '"Outfit", sans-serif', fontWeight: 900,
+                  fontSize: 'clamp(1.4rem, 6vw, 1.8rem)',
+                  textTransform: 'uppercase', lineHeight: 1.05,
+                  margin: '0 0 0.5rem', whiteSpace: 'pre-line'
+                }}>
+                  {category.title}
+                </h3>
+                <p style={{ fontFamily: '"Inter", sans-serif', fontSize: '0.82rem', lineHeight: 1.5, opacity: 0.75, marginBottom: '0.75rem' }}>
+                  {category.description}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                  {category.skills.map((skill, sIdx) => (
+                    <span key={sIdx} style={{
+                      fontFamily: '"Inter", sans-serif',
+                      fontSize: '0.6rem', fontWeight: 700,
+                      textTransform: 'uppercase', letterSpacing: '0.08em',
+                      padding: '3px 8px', borderRadius: '6px',
+                      background: 'rgba(0,0,0,0.15)',
+                      border: '1px solid rgba(255,255,255,0.15)',
+                    }}>
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
+  // ============================================================
+  // DESKTOP VIEW — Full GSAP scroll animation
+  // ============================================================
   return (
     <section
       id="skills"
       ref={sectionRef}
       style={{
-        position: 'relative',
-        width: '100%',
-        height: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-        background: '#0f172a'  // slate-900
+        position: 'relative', width: '100%', height: '100vh',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden', background: '#0f172a'
       }}
     >
-      {/* Background Glow — shifts color during Phase 3 */}
       <div ref={glowRef} className="skills-bg-glow" />
 
-      {/* Hero Header — visible at start, fades out in Phase 1 */}
       <div ref={heroRef} className="skills-hero-header">
-        <h2>
-          Technical <span>Skills</span>
-        </h2>
+        <h2>Technical <span>Skills</span></h2>
         <p>A comprehensive look at my technological expertise.</p>
       </div>
 
-      {/* ====================================
-          CARD STACK
-          Contains 5 cards: 1 cover + 4 back
-          transform-style: preserve-3d enables
-          the 3D stacking and flip effects.
-          ==================================== */}
       <div ref={cardStackRef} className="skills-card-stack">
-
-        {/* COVER CARD (00) — "Technical Expertise" overview */}
-        <div
-          ref={coverCardRef}
-          className="skills-card skills-card--cover"
-        >
-          <div>
-            <span className="card-number">00</span>
-          </div>
+        <div ref={coverCardRef} className="skills-card skills-card--cover">
+          <div><span className="card-number">00</span></div>
           <div>
             <h3 className="card-heading">Technical<br/>Expertise</h3>
             <p className="card-desc">
@@ -297,9 +303,6 @@ const Skills = () => {
           </div>
         </div>
 
-        {/* BACK CARDS (01–04) — One per skill category */}
-        {/* These start facing backward (rotateY: 180deg) and
-            flip forward during Phase 2 of the animation. */}
         {skillCategories.map((category, index) => (
           <div
             key={index}
@@ -308,14 +311,10 @@ const Skills = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <span className="card-number">0{index + 1}</span>
-              <div style={{ opacity: 0.5 }}>
-                {category.icon}
-              </div>
+              <div style={{ opacity: 0.5 }}>{category.icon}</div>
             </div>
             <div>
-              <h3 className="card-heading" style={{ whiteSpace: 'pre-line' }}>
-                {category.title}
-              </h3>
+              <h3 className="card-heading" style={{ whiteSpace: 'pre-line' }}>{category.title}</h3>
               <p className="card-desc">{category.description}</p>
               <div className="card-tags">
                 {category.skills.map((skill, sIdx) => (
@@ -327,7 +326,6 @@ const Skills = () => {
         ))}
       </div>
 
-      {/* Scroll Indicator — subtle hint to scroll */}
       <div ref={indicatorRef} className="skills-scroll-indicator">
         <span>Scroll</span>
         <div className="scroll-line" />

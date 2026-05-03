@@ -223,7 +223,7 @@ const Education = () => {
             <div
               ref={containerRef}
               onClick={handleRestart}
-              className={`relative bg-slate-950 border border-slate-800 rounded-[32px] overflow-hidden shadow-2xl transition-all duration-500 cursor-pointer min-h-[400px] flex items-center justify-center ${isRevealed ? 'border-cyan-500/30' : 'border-slate-700'}`}
+              className={`relative bg-slate-950 border border-slate-800 rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-2xl transition-all duration-500 cursor-pointer min-h-[320px] sm:min-h-[400px] flex items-center justify-center ${isRevealed ? 'border-cyan-500/30' : 'border-slate-700'}`}
             >
               {/* ASCII Canvas Layer */}
               <canvas
@@ -232,7 +232,7 @@ const Education = () => {
               />
 
               {/* Real Content Layer - Revealed after ASCII settles */}
-              <div className={`relative z-10 w-full p-8 md:p-12 transition-all duration-1000 transform ${isRevealed ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
+              <div className={`relative z-10 w-full p-5 sm:p-8 md:p-12 transition-all duration-1000 transform ${isRevealed ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-95 pointer-events-none'}`}>
 
                 <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-10">
                   <div>
@@ -240,10 +240,10 @@ const Education = () => {
                       <Award size={16} />
                       Academic Excellence
                     </div>
-                    <h3 className="text-4xl md:text-6xl font-black text-white uppercase font-outfit leading-none mb-4">
+                    <h3 className="text-2xl sm:text-4xl md:text-6xl font-black text-white uppercase font-outfit leading-none mb-3 sm:mb-4">
                       Bachelor of<br />Computer Applications
                     </h3>
-                    <p className="text-xl md:text-2xl text-slate-400 font-medium font-inter">
+                    <p className="text-base sm:text-xl md:text-2xl text-slate-400 font-medium font-inter">
                       S.M.T.Z.S Patel College
                     </p>
                   </div>
@@ -267,13 +267,13 @@ const Education = () => {
                       initial="hidden"
                       animate={isRevealed ? "visible" : "hidden"}
                       whileHover={{ y: -8, scale: 1.02 }}
-                      className="flex flex-col gap-3 bg-slate-900/80 p-8 rounded-3xl border border-slate-800 hover:border-slate-600 transition-all duration-300"
+                      className="flex flex-col gap-2 sm:gap-3 bg-slate-900/80 p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-800 hover:border-slate-600 transition-all duration-300"
                     >
                       <div className={`flex items-center gap-3 ${stat.color} font-bold uppercase tracking-widest text-xs`}>
                         {stat.icon}
                         {stat.label}
                       </div>
-                      <div className="text-5xl font-black text-white font-outfit">
+                      <div className="text-3xl sm:text-5xl font-black text-white font-outfit">
                         {stat.value}{stat.suffix && <span className="text-2xl text-slate-500 ml-1">{stat.suffix}</span>}
                       </div>
                     </motion.div>
